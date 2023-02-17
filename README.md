@@ -14,7 +14,7 @@ Tutorial to perform an hybrid assembly of bacterial or viral genomes using a com
  
  
  
-### STEP 1. CONVERTING THE PACBIO FILE FORMAT TO FASTQ FILES
+### STEP 1. CONVERTING THE PACBIO FILE FORMAT TO FASTQ FILES NEEDED BY UNICYCLER
  
 
 If we don't have the fastq file for the Pacbio long reads,you will have to convert the specific PacBio "subreads.bam" files before you can use them here with the Unicycler assembler
@@ -92,7 +92,7 @@ We can then implement some general parameters, but we can adjust these later on 
 filtlong --min_length 1000 --keep_percent 90 --target_bases 175000000 AF9_CONVERTED.fastq.gz | gzip > AF9_FILTERED.fastq.gz
 ```
 
-### Quick explanation of the parameters:
+#### Quick explanation of the parameters:
 
 --min_length x ← Discard any read which is shorter than x kbp.
 
@@ -137,9 +137,18 @@ In the case where you have both Illumina short reads and PacBio long reads (conv
 unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l AF9_FILTERED.fastq.gz -o AF9_Hybrid_Assembly --mode normal --threads 10
 ```
 
+The steps where the long-reads are being aligned is somewhat time consuming. 
 
+Example : in the dataset here, we have 30 912 reads, which required around 25 minutes. If the relationship is linear, without doing the "filtlong" step, we might have needed around 10 hours to complete this step of the procedure.
 
+#### The whole procedure required more or less 2 hours for this AF9 hybrid assembly.
 
-### Short explanation for this step
+Now we will go in the output folder to check our final assembly and verify if we need to re-run with different more optimal parameters
+
+What can we use to check the quality of the assembly quickly? We can start by counting the number of contigs (fragments) in the final assembly file :
+
+```
+zgrep -c '>' AF9_Hybrid_Assembly/assembly.fasta
+```
 
 
