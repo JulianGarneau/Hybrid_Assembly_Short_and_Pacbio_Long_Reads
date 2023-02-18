@@ -148,7 +148,13 @@ conda install -c bioconda unicycler
 unicycler -h
 ```
 
+<br/>
+
 In the case where you have both Illumina short reads and PacBio long reads (converted to fastq.gz)
+
+<br/>
+
+⚠️ TEMPLATE COMMANDS ⌨️
 
 ```
 unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l AF9_FILTERED_V1.fastq.gz -o AF9_Hybrid_Assembly_V1 --mode normal --threads 10
