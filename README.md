@@ -92,7 +92,7 @@ We can then implement some general parameters, but we can adjust these later on 
 
 
 ```
-filtlong --min_length 1000 --keep_percent 90 --target_bases 175000000 AF9_CONVERTED.fastq.gz | gzip > AF9_FILTERED.fastq.gz
+filtlong --min_length 1000 --keep_percent 90 --target_bases 175000000 AF9_CONVERTED.fastq.gz | gzip > AF9_FILTERED_V1.fastq.gz
 ```
 
 #### Quick explanation of the parameters:
@@ -137,7 +137,7 @@ How many reads do you have left? From 730 509 reads to 30 912 reads. Not bad! If
 In the case where you have both Illumina short reads and PacBio long reads (converted to fastq.gz)
 
 ```
-unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l AF9_FILTERED.fastq.gz -o AF9_Hybrid_Assembly --mode normal --threads 10
+unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l AF9_FILTERED_V1.fastq.gz -o AF9_Hybrid_Assembly_V1 --mode normal --threads 10
 ```
 
 The steps where the long-reads are being aligned is somewhat time consuming. 
@@ -155,25 +155,36 @@ zgrep -c '>' AF9_Hybrid_Assembly/assembly.fasta
 ```
 
 
-NOTE:
+NOTES ON THE 3 DIFFERENT ATTEMPTS:
 
-#### My first try yielded:
+#### My 1st try yielded:
 
-1.
-2.
-3.
-4.
+```
+filtlong --min_length 1000 --keep_percent 90 --target_bases 175000000 AF9_CONVERTED.fastq.gz | gzip > AF9_FILTERED_V1.fastq.gz
 
 
+unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l  AF9_FILTERED_V1.fastq.gz -o AF9_Hybrid_Assembly_V1 --mode normal --threads 10
+```
+
+>1 length=1849405 (Bacterial genome 1st fragment)
+>2 length=246127 (Bacterial genome 2nd fragment)
+>3 length=148826 circular=true (Potentiel large plasmid)
+>4 length=5029 (The rRNA coding region)
+
++ 3 very small fragments (lower than 500 bp)
 
 
-#### My second try with these adjusted parameters gave me a better assembly. The rational behind changing the parameters to these was to change the balance between long reads and high-identity (having fewer high-identity reads, but more long reads, min 7000 bp).
+
+#### My 2nd try with these adjusted parameters gave me a better assembly. The rational behind changing the parameters to these was to change the balance between long reads and high-identity (having fewer high-identity reads, but more long reads, min 7000 bp).
 
 With this aapproach, I got 2 major contigs and a smaller one of 5029 bp (A rRNA-16Sr and RNA-23S ribosomal RNA of course...)
 
-1. length=2105794 (The bacterial genome)
-2. length=148826, circular=true (Certainly a large plasmid)
-3. length=5029 (The rRNA coding region)
+>1 length=2105794 (The bacterial genome)
+>2 length=148826, circular=true (Potentiel large plasmid)
+>3 length=5029 (The rRNA coding region)
+
++ 2 very small fragments (lower than 500 bp)
+
 
 ```
 filtlong --min_length 7000 --keep_percent 90 --target_bases 200000000 AF9_CONVERTED.fastq.gz | gzip > AF9_FILTERED_V2.fastq.gz
@@ -182,7 +193,24 @@ filtlong --min_length 7000 --keep_percent 90 --target_bases 200000000 AF9_CONVER
 unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l AF9_FILTERED_V2.fastq.gz -o AF9_Hybrid_Assembly_V2 --mode normal --threads 10
 ```
 
+
+#### My 3rd try yielded
+
 I will try again one this time by lowering the min_length to 4000 and augmenting the coverage a bit more again.
 
 I also want to try with much less coverage, because sometimes it can also work better (ex: 20x only instead of 70x or 100x)
 
+Not the best to change another parameter here at the same time, but I also want to see if changing the mode to --mode bold might allow the connection of the last hanging contig (the 5029 bp one).
+
+```
+filtlong --min_length 4000 --keep_percent 90 --target_bases 300000000 AF9_CONVERTED.fastq.gz | gzip > AF9_FILTERED_V3.fastq.gz
+
+
+unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l AF9_FILTERED_V3.fastq.gz -o AF9_Hybrid_Assembly_V3 --mode bold --threads 10
+```
+
+>1  (The bacterial genome)
+>2  circular=true (Potentiel large plasmid)
+>3  (The rRNA coding region)
+
++ x very small fragments (lower than 500 bp)
