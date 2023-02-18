@@ -132,7 +132,21 @@ How many reads do you have left? From 730 509 reads to 30 912 reads. Not bad! If
 
 ### STEP 3. ASSEMBLING THE GENOME(S) WITH UNICYCLER USING ILLUMINA SHORT READS OR LONG READS OR BOTH (HYBRID ASSEMBLY)
 
+ ⚠️ PROGRAMS TO INSTALL 💻 
 
+:small_blue_diamond: unicylcer
+
+I prefer creating a new conda environment for each tool I install
+
+```
+conda create --name unicycler
+
+conda activate unicycler
+
+conda install -c bioconda unicycler
+
+unicycler -h
+```
 
 In the case where you have both Illumina short reads and PacBio long reads (converted to fastq.gz)
 
