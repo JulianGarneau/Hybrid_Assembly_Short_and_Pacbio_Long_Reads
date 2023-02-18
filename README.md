@@ -155,3 +155,34 @@ zgrep -c '>' AF9_Hybrid_Assembly/assembly.fasta
 ```
 
 
+NOTE:
+
+#### My first try yielded:
+
+1.
+2.
+3.
+4.
+
+
+
+
+#### My second try with these adjusted parameters gave me a better assembly. The rational behind changing the parameters to these was to change the balance between long reads and high-identity (having fewer high-identity reads, but more long reads, min 7000 bp).
+
+With this aapproach, I got 2 major contigs and a smaller one of 5029 bp (A rRNA-16Sr and RNA-23S ribosomal RNA of course...)
+
+1. length=2105794 (The bacterial genome)
+2. length=148826, circular=true (Certainly a large plasmid)
+3. length=5029 (The rRNA coding region)
+
+```
+filtlong --min_length 7000 --keep_percent 90 --target_bases 200000000 AF9_CONVERTED.fastq.gz | gzip > AF9_FILTERED_V2.fastq.gz
+
+
+unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l AF9_FILTERED_V2.fastq.gz -o AF9_Hybrid_Assembly_V2 --mode normal --threads 10
+```
+
+I will try again one this time by lowering the min_length to 4000 and augmenting the coverage a bit more again.
+
+I also want to try with much less coverage, because sometimes it can also work better (ex: 20x only instead of 70x or 100x)
+
