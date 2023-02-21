@@ -249,6 +249,8 @@ filtlong --min_length 4000 --keep_percent 90 --target_bases 50000000 AF9_CONVERT
 unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l AF9_FILTERED_V4.fastq.gz -o AF9_Hybrid_Assembly_V4 --mode bold --threads 10
 ```
 
+Results : 31 contigs....  Really bad.
+
 ## Pipeline for the assembly of multiple samples 
 This section will be dedicated to the automated procedure for assembling multiple samples concomitantly (using loops)
 
