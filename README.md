@@ -234,7 +234,7 @@ unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l AF9_FILTERED_V3.fastq
 3. length=5029 (The rRNA coding region)
 4. length=776 (tRNA region)
 
-## The best up to now
+## So far, the 3rd try is the best...
 
 #### My 4th try yielded
 
