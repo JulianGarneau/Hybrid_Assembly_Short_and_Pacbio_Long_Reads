@@ -52,7 +52,7 @@ bam2fastq -o AF9_CONVERTED AF9_m64270e_221226_142146.subreads.bam
 
 
 
-# More info at : https://github.com/PacificBiosciences/bam2fastx
+#### More info at : https://github.com/PacificBiosciences/bam2fastx
 
 
 ### STEP 2. READ SUBSAMPLING AND FILTERING TO KEEP ONLY THE LARGEST READS SAVE (A LOT) ON COMPUTING TIME
@@ -186,10 +186,10 @@ filtlong --min_length 1000 --keep_percent 90 --target_bases 175000000 AF9_CONVER
 unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l  AF9_FILTERED_V1.fastq.gz -o AF9_Hybrid_Assembly_V1 --mode normal --threads 10
 ```
 
->1 length=1849405 (Bacterial genome 1st fragment)
->2 length=246127 (Bacterial genome 2nd fragment)
->3 length=148826 circular=true (Potentiel large plasmid)
->4 length=5029 (The rRNA coding region)
+1. length=1849405 (Bacterial genome 1st fragment)
+2. length=246127 (Bacterial genome 2nd fragment)
+3. length=148826 circular=true (Potentiel large plasmid)
+4. length=5029 (The rRNA coding region)
 
 + 3 very small fragments (lower than 500 bp)
 
@@ -199,9 +199,9 @@ unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l  AF9_FILTERED_V1.fast
 
 With this aapproach, I got 2 major contigs and a smaller one of 5029 bp (A rRNA-16Sr and RNA-23S ribosomal RNA of course...)
 
->1 length=2105794 (The bacterial genome)
->2 length=148826, circular=true (Potentiel large plasmid)
->3 length=5029 (The rRNA coding region)
+.1 length=2105794 (The bacterial genome)
+.2 length=148826, circular=true (Potentiel large plasmid)
+.3 length=5029 (The rRNA coding region)
 
 + 2 very small fragments (lower than 500 bp)
 
@@ -229,8 +229,27 @@ filtlong --min_length 4000 --keep_percent 90 --target_bases 300000000 AF9_CONVER
 unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l AF9_FILTERED_V3.fastq.gz -o AF9_Hybrid_Assembly_V3 --mode bold --threads 10
 ```
 
->1  (The bacterial genome)
->2  circular=true (Potentiel large plasmid)
->3  (The rRNA coding region)
+1. length=2106469 (The bacterial genome)
+2. length=148826 circular=true (Potentiel large plasmid)
+3. length=5029 (The rRNA coding region)
+4. length=776 (tRNA region)
 
-+ x very small fragments (lower than 500 bp)
+## The best up to now
+
+#### My 4th try yielded
+
+I want to try lower coverage this time (20x)
+
+2 500 000 bp * 20x coverage = 50 000 000 total bases (we can now set target_bases to this number)
+
+```
+filtlong --min_length 4000 --keep_percent 90 --target_bases 50000000 AF9_CONVERTED.fastq.gz | gzip > AF9_FILTERED_V4.fastq.gz
+
+
+unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l AF9_FILTERED_V4.fastq.gz -o AF9_Hybrid_Assembly_V4 --mode bold --threads 10
+```
+
+## Pipeline for the assembly of multiple samples 
+This section will be dedicated to the automated procedure for assembling multiple samples concomitantly (using loops)
+
+
