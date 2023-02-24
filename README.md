@@ -254,4 +254,53 @@ Results : 31 contigs....  Really bad.
 ## Pipeline for the assembly of multiple samples 
 This section will be dedicated to the automated procedure for assembling multiple samples concomitantly (using loops)
 
+# LOOP CREATION FOR THE AUTOMATED ASSEMBLY WITH MULTIPLE SAMPLES
+
+```
+source ~/anaconda3/etc/profile.d/conda.sh
+```
+
+```
+for dir in */ ; do
+
+	##### PACBIO PBI FILE CONVERSION PART
+
+	conda activate bam2fastx
+    echo "Starting the analysis for" "$dir"
+    echo "Moving to the folder" "$dir"
+    cd "$dir"
+    # Assign the name of the folder to the SAMPLE_NAME (and deleting the / from the name)
+    SAMPLE_NAME=$(echo "$dir" | sed 's/\///')
+    echo ${SAMPLE_NAME}
+    echo "Doing bam2fastq on" "${SAMPLE_NAME}"
+    bam2fastq -o ${SAMPLE_NAME}_CONVERTED *.bam
+    conda deactivate
+
+    ##### FILTERING THE PACBIO FASTQ FILE
+
+    conda activate filtlong
+    SAMPLE_NAME=$(echo "$dir" | sed 's/\///')
+    # --target_base has be recalculated depending on the genome being analyzed
+    echo "Doing filtlong on" "${SAMPLE_NAME}_CONVERTED"
+    filtlong --min_length 4000 --keep_percent 90 --target_bases 300000000 ${SAMPLE_NAME}_CONVERTED.fastq.gz | gzip > ${SAMPLE_NAME}_FILTERED.fastq.gz
+    conda deactivate
+    zgrep -c '@' ${SAMPLE_NAME}_CONVERTED.fastq.gz > ${SAMPLE_NAME}_CONVERTED_read_counts.txt
+    zgrep -c '@' ${SAMPLE_NAME}_FILTERED.fastq.gz > ${SAMPLE_NAME}_FILTERED_counts.txt
+
+    ##### HYBRID ASSEMBLY PART
+
+    conda activate unicycler
+    SAMPLE_NAME=$(echo "$dir" | sed 's/\///')
+    echo "Doing Unicycler on" "${SAMPLE_NAME}_FILTERED.fastq.gz"
+    unicycler -1 ${SAMPLE_NAME}_R1_001.fastq.gz -2 ${SAMPLE_NAME}_R2_001.fastq.gz -l ${SAMPLE_NAME}_FILTERED.fastq.gz -o ${SAMPLE_NAME}_Hybrid_Assembly --mode normal --threads 10
+    conda deactivate
+    zgrep -c '>' ${SAMPLE_NAME}_Hybrid_Assembly/assembly.fasta
+
+### Coming back to original directory to continue the loop on other folders containing the Pacbio and Illumina reads
+    cd ..
+
+done
+
+```
+
 
