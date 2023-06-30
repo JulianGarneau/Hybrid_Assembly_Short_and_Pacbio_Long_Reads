@@ -1,12 +1,12 @@
-# :dragon:Hybrid_Assembly_Short_and_Pacbio_Long_Reads:dragon:
+# :dragon:Hybrid_Assembly_Short_and_Pacbio_Long_Reads
 Tutorial to perform an hybrid assembly of bacterial or viral genomes using a combination of short and long reads
 
 
 
 ### Table of contents (main steps of the procedure)
 
-1.	Converting the pacbio files format to fastq files
-2.	Read subsampling and filtering
+1. Converting the pacbio files format to fastq files
+2. Read subsampling and filtering
 3. Assembling the genome(s) with unicycler
 
 
@@ -17,10 +17,10 @@ Tutorial to perform an hybrid assembly of bacterial or viral genomes using a com
  
  
  
-### STEP 1. CONVERTING THE PACBIO FILE FORMAT TO FASTQ FILES NEEDED BY UNICYCLER
+### STEP 1. CONVERTING THE PACBIO FILE FORMAT (here .bam) TO FASTQ FILES NEEDED BY UNICYCLER
  
 
-If we don't have the fastq file for the Pacbio long reads,you will have to convert the specific PacBio "subreads.bam" files before you can use them here with the Unicycler assembler
+If we don't have the fastq.gz file for the Pacbio long reads,you will have to convert the specific PacBio "subreads.bam" files before you can use them here with the Unicycler assembler
 
 To convert Pacbio BAM files to fastq that we will need, we have to install the PacBio tool named bam2fastx (available with conda)
 
@@ -95,6 +95,16 @@ We can then implement some general parameters, but we can adjust these later on 
 filtlong --min_length 1000 --keep_percent 90 --target_bases 175000000 AF9_CONVERTED.fastq.gz | gzip > AF9_FILTERED_V1.fastq.gz
 ```
 
+Here is a template loop to iterate over all PACBIO reads, considering you have renamed your files appropriately (ex: AF9_PACBIO.fastq.gz, XXX_PACBIO.fastq.gz, etc.)
+
+```
+for prefix in $(ls *.fastq.gz | sed -E 's/_PACBIO.fastq.gz//' | uniq)
+do
+filtlong --min_length 4000 --keep_percent 90 --target_bases 300000000 ${prefix}_PACBIO.fastq.gz | gzip > ${prefix}_PACBIO_FILTERED.fastq.gz
+done
+```
+
+
 #### Quick explanation of the parameters:
 
 --min_length x ← Discard any read which is shorter than x kbp.
@@ -128,6 +138,20 @@ Compare the number of reads in the files before filtering and after:
 zgrep -c '@' AF9_CONVERTED.fastq.gz
 zgrep -c '@' AF9_FILTERED.fastq.gz
 ```
+
+And a loop for all the info at once
+
+```
+for file in *.fastq.gz
+do
+zgrep -c '@' $file >> READS_COUNT.txt
+done
+```
+
+
+
+
+
 How many reads do you have left? From 730 509 reads to 30 912 reads. Not bad! If those are all long and high-quality reads, we understand that we are gonna save a big amount of computer time now. 
 
 ### STEP 3. ASSEMBLING THE GENOME(S) WITH UNICYCLER USING ILLUMINA SHORT READS OR LONG READS OR BOTH (HYBRID ASSEMBLY)
@@ -190,8 +214,7 @@ unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l  AF9_FILTERED_V1.fast
 2. length=246127 (Bacterial genome 2nd fragment)
 3. length=148826 circular=true (Potentiel large plasmid)
 4. length=5029 (The rRNA coding region)
-
-+ 3 very small fragments (lower than 500 bp)
+5. plus 3 very small fragments (lower than 500 bp)
 
 
 
@@ -199,11 +222,10 @@ unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l  AF9_FILTERED_V1.fast
 
 With this aapproach, I got 2 major contigs and a smaller one of 5029 bp (A rRNA-16Sr and RNA-23S ribosomal RNA of course...)
 
-.1 length=2105794 (The bacterial genome)
-.2 length=148826, circular=true (Potentiel large plasmid)
-.3 length=5029 (The rRNA coding region)
-
-+ 2 very small fragments (lower than 500 bp)
+1. length=2105794 (The bacterial genome)
+2. length=148826, circular=true (Potentiel large plasmid)
+3. length=5029 (The rRNA coding region)
+4. plus 2 very small fragments (lower than 500 bp)
 
 
 ```
