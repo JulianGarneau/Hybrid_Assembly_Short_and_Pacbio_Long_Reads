@@ -184,6 +184,20 @@ In the case where you have both Illumina short reads and PacBio long reads (conv
 unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l AF9_FILTERED_V1.fastq.gz -o AF9_Hybrid_Assembly_V1 --mode normal --threads 10
 ```
 
+The loop for more automated hybrid assembly
+
+```
+for prefix in $(ls *_PACBIO_FILTERED.fastq.gz | sed -E 's/_PACBIO_FILTERED.fastq.gz//' | uniq)
+do
+echo "Doing the sample" ${prefix}
+
+unicycler -1 ${prefix}_FASTP_R1_001.fastq.gz -2 ${prefix}_FASTP_R2_001.fastq.gz -l ${prefix}_PACBIO_FILTERED.fastq.gz -o ${prefix}_Hybrid_Assembly --mode bold --threads 32
+done
+```
+
+
+
+
 The steps where the long-reads are being aligned is somewhat time consuming. 
 
 Example : in the dataset here, we have 30 912 reads, which required around 25 minutes. If the relationship is linear, without doing the "filtlong" step, we might have needed around 10 hours to complete this step of the procedure.
