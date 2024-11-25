@@ -5,7 +5,7 @@ Tutorial to perform an hybrid assembly of bacterial or viral genomes using a com
 
 ### Table of contents (main steps of the procedure)
 
-1. Converting the pacbio files format to fastq files (if you needed. Often they are already provided as FASTQ format so you can skip this part)
+1. Converting the pacbio files format to fastq files (If needed. Often they are already provided as FASTQ format so you can skip this part)
 2. Read subsampling and filtering
 3. Assembling the genome(s) with unicycler
 
@@ -250,7 +250,7 @@ unicycler -1 AF9_R1_001.fastq.gz -2 AF9_R2_001.fastq.gz -l AF9_FILTERED_V2.fastq
 ```
 
 
-#### My 3rd try yielded
+#### My 3rd try yielded (THE ONE I USED IN THE END, BEST PERFORMANCE YET)
 
 I will try again one this time by lowering the min_length to 4000 and augmenting the coverage a bit more again.
 
@@ -290,7 +290,7 @@ Results : 31 contigs....  Really bad.
 ## Pipeline for the assembly of multiple samples 
 This section will be dedicated to the automated procedure for assembling multiple samples concomitantly (using loops)
 
-# LOOP CREATION FOR THE AUTOMATED ASSEMBLY WITH MULTIPLE SAMPLES
+# LOOP CREATION FOR THE AUTOMATED ASSEMBLY WITH MULTIPLE SAMPLES FOR THOSE INTERESTED
 
 ```
 source ~/anaconda3/etc/profile.d/conda.sh
