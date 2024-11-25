@@ -5,7 +5,7 @@ Tutorial to perform an hybrid assembly of bacterial or viral genomes using a com
 
 ### Table of contents (main steps of the procedure)
 
-1. Converting the pacbio files format to fastq files
+1. Converting the pacbio files format to fastq files (if you needed. Often they are already provided as FASTQ format so you can skip this part)
 2. Read subsampling and filtering
 3. Assembling the genome(s) with unicycler
 
